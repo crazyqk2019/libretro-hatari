@@ -83,7 +83,7 @@
 #endif
 #endif
 /* Define to 1 if you have the 'scandir' function. */
-#if !defined(WIIU) && !defined(VITA) && !defined(__PS3__) && !defined(GEKKO)
+#if !defined(WIIU) && !defined(VITA) && !defined(__PS3__) && !defined(GEKKO) && !defined(__MINGW32__)
 #define HAVE_SCANDIR 1
 #endif
 

@@ -3,6 +3,10 @@ LIBRETRO_DIR = $(CORE_DIR)/libretro
 ZLIB_DIR = $(LIBRETRO_DIR)/utils/zlib
 STATIC_LINKING=0
 STATIC_LINKING_LINK=0
+ifneq ($(findstring MINGW,$(shell uname)),)
+    EXTERNAL_ZLIB = 0
+    capsimg = 1
+endif
 
 ifeq ($(platform),)
 platform = unix
@@ -207,7 +211,7 @@ else
    CFLAGS += -D_FILE_OFFSET_BITS=64
 	TARGET := $(TARGET_NAME)_libretro.dll
    SHARED := -shared -static-libgcc -s -Wl,--version-script=$(LIBRETRO_DIR)/link.T -Wl,--no-undefined 
-	EXTERNAL_ZLIB = 1
+	#EXTERNAL_ZLIB = 1
 endif
 
 ZLIB =
@@ -216,7 +220,7 @@ ZLIB = -lz
 endif
 
 ifeq ($(capsimg), 1)
-PLATFLAGS += -DHAVE_CAPSIMAGE -DCAPSIMAGE_VERSION=5 -I$(capssrc)/LibIPF/ -I$(capssrc)/Core/
+PLATFLAGS += -DHAVE_CAPSIMAGE -DCAPSIMAGE_VERSION=5
 endif
 
 ifeq ($(DEBUG), 1)
@@ -225,6 +229,12 @@ else
 CFLAGS += -funroll-loops -ffast-math -fomit-frame-pointer -O3
 endif
 CFLAGS += -fsigned-char -D__LIBRETRO__ -fno-builtin
+
+ifneq ($(findstring MINGW,$(shell uname)),)
+    PLATFLAGS += -DHAVE_LIBPNG=1 -DHAVE_LIBREADLINE=1 -DHAVE_PORTAUDIO=1 -DHAVE_GLOB_H=1 -DHAVE_SDL_SDL_CONFIG_H=1 -DHAVE_CFMAKERAW=1 
+    PLATFLAGS += -DHAVE_SELECT=1 -DHAVE_NANOSLEEP=1 -DHAVE_FSEEKO=1 -DHAVE_FTELLO=1 -DHAVE_FTELLO=1
+    SHARED += -lpng16 -lreadline -lportaudio -lcapsimg -lws2_32
+endif
 
 CFLAGS   += $(fpic) $(PLATFLAGS)
 CXXFLAGS := $(CFLAGS)
